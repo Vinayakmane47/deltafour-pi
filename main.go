@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -93,13 +94,17 @@ func main() {
 	}
 
 	for {
-		buf := make([]byte, 32)
+		buf := make([]byte, 1)
 		n := 0
 		n, err = s.Read(buf)
 		if err != nil {
 			log.Fatal(err)
 		}
-		pi_channel <- read_int32_big(buf[:n])
+		if n <= 0 {
+			fmt.Println("got 0")
+		}
+		fmt.Println(uint8(buf[0]))
+		// pi_channel <- read_int32_big(buf[:n])
 	}
 
 }
@@ -137,3 +142,4 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 		}
 	}
 }
+
