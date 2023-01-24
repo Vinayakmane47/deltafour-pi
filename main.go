@@ -103,7 +103,7 @@ func main() {
 		if n <= 0 {
 			fmt.Println("got 0")
 		}
-		fmt.Println(int32(binary.BigEndian.Uint32(buf))))
+		fmt.Println(int32(binary.BigEndian.Uint32(buf)))
 		// pi_channel <- read_int32_big(buf[:n])
 	}
 
