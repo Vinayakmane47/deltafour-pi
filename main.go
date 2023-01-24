@@ -93,19 +93,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for {
-		buf := make([]byte, 1)
-		n := 0
-		n, err = s.Read(buf)
-		if err != nil {
-			log.Fatal(err)
+	go func() {
+		for {
+			buf := make([]byte, 1)
+			n := 0
+			n, err = s.Read(buf)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if n <= 0 {
+				fmt.Println("got 0")
+			}
+			fmt.Println(uint8(buf[0]))
+			// pi_channel <- read_int32_big(buf[:n])
 		}
-		if n <= 0 {
-			fmt.Println("got 0")
-		}
-		fmt.Println(uint8(buf[0]))
-		// pi_channel <- read_int32_big(buf[:n])
-	}
+	}()
 
 }
 
