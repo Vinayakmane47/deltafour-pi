@@ -127,7 +127,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.Close()
+	// defer s.Close()
 
 	go func() {
 		for {
