@@ -1,3 +1,4 @@
+git pull
 rm -rf *.txt
 go get github.com/tarm/goserial
 go get github.com/aws/aws-sdk-go
