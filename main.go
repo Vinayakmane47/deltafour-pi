@@ -103,8 +103,8 @@ func main() {
 		if n <= 0 {
 			fmt.Println("got 0")
 		}
-		fmt.Println(uint8(buf[0]))
-		// pi_channel <- read_int32_big(buf[:n])
+		// fmt.Println(uint8(buf[0]))
+		pi_channel <- read_int32_big(buf[:n])
 	}
 
 }
@@ -119,6 +119,7 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 				return
 			}
 			val = val + strconv.Itoa(int(d)) + ","
+			fmt.Println(strconv.Itoa(int(d)))
 			if count%10000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
