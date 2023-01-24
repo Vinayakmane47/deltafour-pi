@@ -22,7 +22,7 @@ var file_count int
 
 func read_int32_big(data []byte) (ret uint8) {
 	buf := bytes.NewBuffer(data)
-	binary.Read(buf, binary.BigEndian, &ret)
+	binary.Read(buf, binary.LittleEndian, &ret)
 	return
 }
 
@@ -68,46 +68,6 @@ func upload(filess chan string, uploader *s3manager.Uploader) {
 	}
 }
 
-func main() {
-
-	s3Config := &aws.Config{
-		Region:      aws.String("ap-south-1"),
-		Credentials: credentials.NewStaticCredentials("AKIAYQ5GABTRPHZY32DP", "9meuXNrV+xHcQAc1M8VbEnyGP0IdTi7OgQbnrnr2", ""),
-	}
-	s3Session := session.New(s3Config)
-
-	uploader := s3manager.NewUploader(s3Session)
-
-	count = 1
-	file_count = 0
-	pi_channel := make(chan uint8)
-	pi_files := make(chan string)
-
-	val := ""
-	go upload(pi_files, uploader)
-	go readDataCh(pi_channel, val, pi_files)
-
-	c := &serial.Config{Name: "/dev/ttyACM0", Baud: 115200, ReadTimeout: time.Millisecond * 5000}
-	s, err := serial.OpenPort(c)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for {
-		buf := make([]byte, 4)
-		n := 0
-		n, err = s.Read(buf)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if n <= 0 {
-			fmt.Println("got 0")
-		}
-		fmt.Println(int32(binary.BigEndian.Uint32(buf)))
-	}
-
-}
-
 func readDataCh(ints chan uint8, val string, pi_files chan string) {
 
 	for {
@@ -143,3 +103,61 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 	}
 }
 
+func main() {
+
+	s3Config := &aws.Config{
+		Region:      aws.String("ap-south-1"),
+		Credentials: credentials.NewStaticCredentials("AKIAYQ5GABTRPHZY32DP", "9meuXNrV+xHcQAc1M8VbEnyGP0IdTi7OgQbnrnr2", ""),
+	}
+	s3Session := session.New(s3Config)
+
+	uploader := s3manager.NewUploader(s3Session)
+
+	count = 1
+	file_count = 0
+	pi_channel := make(chan uint8)
+	pi_files := make(chan string)
+
+	val := ""
+	go upload(pi_files, uploader)
+	go readDataCh(pi_channel, val, pi_files)
+
+	c := &serial.Config{Name: "/dev/ttyACM0", Baud: 115200, ReadTimeout: time.Millisecond * 5000}
+	s, err := serial.OpenPort(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer s.Close()
+
+	go func() {
+		for {
+			buf := make([]byte, 1)
+			n, err := s.Read(buf)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if n <= 0 {
+				fmt.Println("got 0")
+			}
+			// fmt.Println(uint8(buf[0]))
+			pi_channel <- read_int32_big(buf[:n])
+		}
+	}()
+
+	go func() {
+		for {
+			buf := make([]byte, 1)
+			n, err := s.Read(buf)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if n <= 0 {
+				fmt.Println("got 0")
+			}
+			// fmt.Println(uint8(buf[0]))
+			pi_channel <- read_int32_big(buf[:n])
+		}
+	}()
+}
