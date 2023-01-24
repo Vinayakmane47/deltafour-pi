@@ -22,7 +22,7 @@ var file_count int
 
 func read_int32_big(data []byte) (ret uint8) {
 	buf := bytes.NewBuffer(data)
-	binary.Read(buf, binary.LittleEndian, &ret)
+	binary.Read(buf, binary.BigEndian, &ret)
 	return
 }
 
@@ -68,41 +68,6 @@ func upload(filess chan string, uploader *s3manager.Uploader) {
 	}
 }
 
-func readDataCh(ints chan uint8, val string, pi_files chan string) {
-
-	for {
-		select {
-		case d, ok := <-ints:
-			if !ok {
-				log.Fatal("error in channel")
-				return
-			}
-			val = val + strconv.Itoa(int(d)) + ","
-			fmt.Println(strconv.Itoa(int(d)))
-			if count%10000 == 0 {
-				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				data := []byte(val)
-
-				_, err2 := f.Write(data)
-
-				if err2 != nil {
-					log.Fatal(err2)
-				}
-				f.Close()
-				val = ""
-				pi_files <- "data" + strconv.Itoa(file_count) + ".txt"
-				file_count = file_count + 1
-			}
-			count = count + 1
-		}
-	}
-}
-
 func main() {
 
 	s3Config := &aws.Config{
@@ -127,37 +92,53 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// defer s.Close()
 
-	go func() {
-		for {
-			buf := make([]byte, 1)
-			n, err := s.Read(buf)
-			if err != nil {
-				fmt.Println(err)
+	for {
+		buf := make([]byte, 4)
+		n := 0
+		n, err = s.Read(buf)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if n <= 0 {
+			fmt.Println("got 0")
+		}
+		fmt.Println(int32(binary.BigEndian.Uint32(buf))))
+		// pi_channel <- read_int32_big(buf[:n])
+	}
+
+}
+
+func readDataCh(ints chan uint8, val string, pi_files chan string) {
+
+	for {
+		select {
+		case d, ok := <-ints:
+			if !ok {
+				log.Fatal("error in channel")
 				return
 			}
-			if n <= 0 {
-				fmt.Println("got 0")
-			}
-			fmt.Println(uint8(buf[0]))
-			pi_channel <- read_int32_big(buf[:n])
-		}
-	}()
+			val = val + strconv.Itoa(int(d)) + ","
+			if count%10000 == 0 {
+				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
-	go func() {
-		for {
-			buf := make([]byte, 1)
-			n, err := s.Read(buf)
-			if err != nil {
-				fmt.Println(err)
-				return
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				data := []byte(val)
+
+				_, err2 := f.Write(data)
+
+				if err2 != nil {
+					log.Fatal(err2)
+				}
+				f.Close()
+				val = ""
+				pi_files <- "data" + strconv.Itoa(file_count) + ".txt"
+				file_count = file_count + 1
 			}
-			if n <= 0 {
-				fmt.Println("got 0")
-			}
-			fmt.Println(uint8(buf[0]))
-			pi_channel <- read_int32_big(buf[:n])
+			count = count + 1
 		}
-	}()
+	}
 }
