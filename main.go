@@ -94,7 +94,7 @@ func main() {
 	}
 
 	for {
-		buf := make([]byte, 1)
+		buf := make([]byte, 4)
 		n := 0
 		n, err = s.Read(buf)
 		if err != nil {
@@ -103,8 +103,7 @@ func main() {
 		if n <= 0 {
 			fmt.Println("got 0")
 		}
-		// fmt.Println(uint8(buf[0]))
-		pi_channel <- read_int32_big(buf[:n])
+		fmt.Println(int32(binary.BigEndian.Uint32(buf)))
 	}
 
 }
