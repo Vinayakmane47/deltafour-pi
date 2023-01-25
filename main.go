@@ -95,6 +95,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go func() {
+
 		for {
 			buf := make([]byte, 1)
 			lock.Lock()
@@ -111,6 +112,25 @@ func main() {
 		}
 	}()
 
+	time.Sleep(5 * time.Second)
+	go func() {
+
+		for {
+			buf := make([]byte, 1)
+			lock.Lock()
+			n := 0
+			n, err = s.Read(buf)
+			lock.Unlock()
+			if err != nil {
+				log.Fatal(err)
+			}
+			if n <= 0 {
+				fmt.Println("got 0")
+			}
+			pi_channel <- uint8(buf[0])
+		}
+	}()
+	time.Sleep(5 * time.Second)
 }
 
 func readDataCh(ints chan uint8, val string, pi_files chan string) {
