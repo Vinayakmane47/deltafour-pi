@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,6 +20,8 @@ import (
 
 var count int
 var file_count int
+
+var lock = &sync.Mutex{}
 
 func read_int32_big(data []byte) (ret uint8) {
 	buf := bytes.NewBuffer(data)
@@ -92,19 +95,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	for {
-		buf := make([]byte, 1)
-		n := 0
-		n, err = s.Read(buf)
-		if err != nil {
-			log.Fatal(err)
+	go func() {
+		for {
+			buf := make([]byte, 1)
+			lock.Lock()
+			n := 0
+			n, err = s.Read(buf)
+			lock.Unlock()
+			if err != nil {
+				log.Fatal(err)
+			}
+			if n <= 0 {
+				fmt.Println("got 0")
+			}
+			pi_channel <- uint8(buf[0])
 		}
-		if n <= 0 {
-			fmt.Println("got 0")
-		}
-		pi_channel <- uint8(buf[0])
-	}
+	}()
 
 }
 
@@ -118,7 +124,8 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 				return
 			}
 			val = val + strconv.Itoa(int(d)) + ","
-			if count%10000 == 0 {
+			fmt.Println(strconv.Itoa(int(d)))
+			if count%100000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
 				if err != nil {
