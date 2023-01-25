@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -21,7 +20,7 @@ import (
 var count int
 var file_count int
 
-var lock = &sync.Mutex{}
+// var lock = &sync.Mutex{}
 
 func read_int32_big(data []byte) (ret uint8) {
 	buf := bytes.NewBuffer(data)
@@ -90,7 +89,7 @@ func main() {
 	go upload(pi_files, uploader)
 	go readDataCh(pi_channel, val, pi_files)
 
-	c := &serial.Config{Name: "/dev/ttyAMA0", Baud: 9600}
+	c := &serial.Config{Name: "/dev/ttyACM0", Baud: 9600}
 	s, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
@@ -99,10 +98,10 @@ func main() {
 
 		for {
 			buf := make([]byte, 1)
-			lock.Lock()
+			// lock.Lock()
 			n := 0
 			n, err = s.Read(buf)
-			lock.Unlock()
+			// lock.Unlock()
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -118,10 +117,10 @@ func main() {
 
 		for {
 			buf := make([]byte, 1)
-			lock.Lock()
+			// lock.Lock()
 			n := 0
 			n, err = s.Read(buf)
-			lock.Unlock()
+			// lock.Unlock()
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -132,6 +131,7 @@ func main() {
 		}
 	}()
 	time.Sleep(5 * time.Second)
+
 }
 
 func readDataCh(ints chan uint8, val string, pi_files chan string) {
