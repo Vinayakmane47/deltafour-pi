@@ -1,5 +1,6 @@
 import serial
 import datetime
+import codecs
 
 # # port = serial.Serial(port="/dev/ttyACM0", baudrate=115200, timeout=10.0)
 
