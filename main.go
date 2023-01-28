@@ -50,10 +50,10 @@ func upload(filess chan string, uploader *s3manager.Uploader) {
 			upFile.Read(fileBuffer)
 
 			input := &s3manager.UploadInput{
-				Bucket:      aws.String("isolation-point-images"), // bucket's name
-				Key:         aws.String("devtesting/" + filename), // files destination location
-				Body:        bytes.NewReader(fileBuffer),          // content of the file
-				ContentType: aws.String("text"),                   // content type
+				Bucket:      aws.String("isolation-point-images"),                                   // bucket's name
+				Key:         aws.String("devtesting/" + time.Now().Format("2006-01-02") + filename), // files destination location
+				Body:        bytes.NewReader(fileBuffer),                                            // content of the file
+				ContentType: aws.String("text"),                                                     // content type
 			}
 			_, errs := uploader.UploadWithContext(context.Background(), input)
 			if errs != nil {
