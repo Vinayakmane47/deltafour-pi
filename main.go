@@ -144,7 +144,7 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 				return
 			}
 			val = val + strconv.Itoa(int(d)) + ","
-			fmt.Println(strconv.Itoa(int(d)))
+// 			fmt.Println(strconv.Itoa(int(d)))
 			if count%10000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
