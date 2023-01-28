@@ -19,7 +19,7 @@ import codecs
 
 
 if __name__ == '__main__':
-    with serial.Serial(port="/dev/ttyACM0", baudrate=9600, timeout=10.0) as serialPort:
+    with serial.Serial(port="/dev/ttyACM0", baudrate=38400, timeout=10.0) as serialPort:
         while True:
             if serialPort.isOpen():
                 rcv = serialPort.read(1)
