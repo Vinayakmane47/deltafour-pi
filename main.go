@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -119,9 +120,9 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 				log.Fatal("error in channel")
 				return
 			}
-			val = val + strconv.Itoa(int(d)) + ","
-			// 			fmt.Println(strconv.Itoa(int(d)))
-			if count%10000 == 0 {
+			currentTime := time.Now().Format(time.RFC3339)
+			val = val + currentTime + "," + strconv.Itoa(int(d)) + "\n"
+			if count%1000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
 				if err != nil {
