@@ -22,4 +22,4 @@ if __name__ == '__main__':
         while True:
             if serialPort.isOpen():
                 rcv = serialPort.read(10)
-                print(" recieved: " + rcv.decode())
+                print(" recieved: " + str(rcv, 'UTF-8'))
