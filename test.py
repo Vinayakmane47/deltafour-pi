@@ -16,7 +16,7 @@ import datetime
 # serialPort.close()
 
 with serial.Serial(port="/dev/ttyACM0",baudrate=115200, timeout=10.0) as serialPort:
-	while True:
+    while True:
 		if serialPort.isOpen():	
 			rcv = port.read(10)
     			print(" recieved:" + repr(rcv))
