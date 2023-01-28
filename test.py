@@ -8,15 +8,18 @@ import datetime
 
 # 	print(datetime.datetime.now())
 # 	while 1:
-# 		if serialPort.isOpen():		
+# 		if serialPort.isOpen():
 # 			Str = int.from_bytes(serialPort.read(),"big")
 # 			print(datetime.datetime.now(),Str)
-			
+
 
 # serialPort.close()
 
-with serial.Serial(port="/dev/ttyACM0",baudrate=115200, timeout=10.0) as serialPort:
-    while True:
-		if serialPort.isOpen():	
-			rcv = port.read(10)
-    			print(" recieved:" + repr(rcv))
+
+
+if __name__ == '__main__':
+    with serial.Serial(port="/dev/ttyACM0", baudrate=115200, timeout=10.0) as serialPort:
+        while True:
+            if serialPort.isOpen():
+                rcv = serialPort.read(10)
+                print(" recieved:" + repr(rcv))
