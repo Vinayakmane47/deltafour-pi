@@ -89,7 +89,7 @@ func main() {
 	go upload(pi_files, uploader)
 	go readDataCh(pi_channel, val, pi_files)
 
-	c := &serial.Config{Name: "/dev/ttyACM0", Baud: 38400}
+	c := &serial.Config{Name: "/dev/ttyACM0", Baud: 9600}
 	s, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
@@ -145,7 +145,7 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 			}
 			val = val + strconv.Itoa(int(d)) + ","
 			fmt.Println(strconv.Itoa(int(d)))
-			if count%100000 == 0 {
+			if count%10000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
 				if err != nil {
