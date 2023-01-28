@@ -1,15 +1,22 @@
 import serial
 import datetime
 
-with serial.Serial(port="/dev/ttyACM0",baudrate=115200) as serialPort:
+# # port = serial.Serial(port="/dev/ttyACM0", baudrate=115200, timeout=10.0)
 
-	print(datetime.datetime.now())
-	while 1:
-		if serialPort.in_waiting > 0:		
-			Str = int.from_bytes(serialPort.read(),"big")
-			#line = Str.decode('cp1250').strip('\r\n')
-			#line = Str.decode('uint8').strip('\r\n')
-			#string = line.split(' ')
-			print(datetime.datetime.now(),Str)
 
-serialPort.close()
+# with serial.Serial(port="/dev/ttyACM0",baudrate=115200) as serialPort:
+
+# 	print(datetime.datetime.now())
+# 	while 1:
+# 		if serialPort.isOpen():		
+# 			Str = int.from_bytes(serialPort.read(),"big")
+# 			print(datetime.datetime.now(),Str)
+			
+
+# serialPort.close()
+
+with serial.Serial(port="/dev/ttyACM0",baudrate=115200, timeout=10.0) as serialPort:
+	while True:
+		if serialPort.isOpen():	
+			rcv = port.read(10)
+    			print(" recieved:" + repr(rcv))
