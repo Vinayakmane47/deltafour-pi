@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -95,19 +94,19 @@ func main() {
 		log.Fatal(err)
 	}
 	for {
-			buf := make([]byte, 1)
-			// lock.Lock()
-			n := 0
-			n, err = s.Read(buf)
-			// lock.Unlock()
-			if err != nil {
-				log.Fatal(err)
-			}
-			if n <= 0 {
-				fmt.Println("got 0")
-			}
-			pi_channel <- uint8(buf[0])
+		buf := make([]byte, 1)
+		// lock.Lock()
+		n := 0
+		n, err = s.Read(buf)
+		// lock.Unlock()
+		if err != nil {
+			log.Fatal(err)
 		}
+		if n <= 0 {
+			fmt.Println("got 0")
+		}
+		pi_channel <- uint8(buf[0])
+	}
 
 }
 
@@ -121,7 +120,7 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 				return
 			}
 			val = val + strconv.Itoa(int(d)) + ","
-// 			fmt.Println(strconv.Itoa(int(d)))
+			// 			fmt.Println(strconv.Itoa(int(d)))
 			if count%10000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
