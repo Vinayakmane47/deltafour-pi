@@ -51,7 +51,7 @@ func upload(filess chan string, uploader *s3manager.Uploader) {
 
 			input := &s3manager.UploadInput{
 				Bucket:      aws.String("isolation-point-images"),                                   // bucket's name
-				Key:         aws.String("devtesting/" + time.Now().Format("2006-01-02") + filename), // files destination location
+				Key:         aws.String("devtesting/" + time.Now().Format("2006-01-02") +"/" +filename), // files destination location
 				Body:        bytes.NewReader(fileBuffer),                                            // content of the file
 				ContentType: aws.String("text"),                                                     // content type
 			}
@@ -122,7 +122,7 @@ func readDataCh(ints chan uint8, val string, pi_files chan string) {
 			}
 			currentTime := time.Now().Format("2006-01-02 15:04:05.000000")
 			val = val + currentTime + "," + strconv.Itoa(int(d)) + "\n"
-			if count%1000 == 0 {
+			if count%30000 == 0 {
 				f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
 				if err != nil {
