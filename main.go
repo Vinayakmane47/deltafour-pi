@@ -125,6 +125,7 @@ func readDataCh(ints chan []byte, val string, pi_files chan string) {
 			for i := 0; i < len(d); i++ {
 				currentTime := time.Now().Format("2006-01-02 15:04:05.000000")
 				val = val + currentTime + "," + strconv.Itoa(int(uint8(d[i]))) + "\n"
+				fmt.Println(strconv.Itoa(int(uint8(d[i]))))
 				if count%1500 == 0 {
 					f, err := os.Create("data" + strconv.Itoa(file_count) + ".txt")
 
